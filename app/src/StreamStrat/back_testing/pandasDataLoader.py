@@ -4,7 +4,7 @@ class PandasDEMA(bt.feeds.PandasData):
     lines = ('dema_short','dema_long','buy_signal','sell_signal')
     params = (
         ('datetime', None),
-        ('open',None),
+        ('open','Open'),
         ('high',None),
         ('low',None),
         ('close',"Close"),
@@ -22,7 +22,7 @@ class PandasOBV(bt.feeds.PandasData):
     lines = ('obv','obv_ema','buy_signal','sell_signal')
     params = (
         ('datetime', None),
-        ('open',None),
+        ('open','Open'),
         ('high',None),
         ('low',None),
         ('close',"Close"),
@@ -39,7 +39,7 @@ class PandasSMA(bt.feeds.PandasData):
     lines = ('sma30','sma100','buy_signal','sell_signal')
     params = (
         ('datetime', None),
-        ('open',None),
+        ('open','Open'),
         ('high',None),
         ('low',None),
         ('close',"Close"),
@@ -56,7 +56,7 @@ class PandasFibonacci(bt.feeds.PandasData):
     lines = ('macd','signal_line','buy_signal','sell_signal')
     params = (
         ('datetime', None),
-        ('open',None),
+        ('open','Open'),
         ('high',None),
         ('low',None),
         ('close',"Close"),

@@ -126,7 +126,7 @@ elif screen == 'News':
 
     scoreDf = createSentimentScore(news)
 
-    st.subheader("Sentiment Analysis Results for Following News (-1 means extreme negative class, +1 means extreme positive class)")
+    st.subheader("Sentiment Analysis Results for Following News (-1 means extreme negative emotion, +1 means extreme positive emotion)")
     table = pd.DataFrame([{"Mean": scoreDf["score"].mean(), "Standard Deviation": scoreDf["score"].std(),
                            "Min":scoreDf["score"].min(), "Max":scoreDf["score"].max()
                            }], index= [""]

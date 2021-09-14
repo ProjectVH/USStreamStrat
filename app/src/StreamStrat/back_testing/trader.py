@@ -94,14 +94,14 @@ class TestStrategy(bt.Strategy):
                 self.log('BUY CREATE, %.2f' % self.dataclose[0])
 
                 # Keep track of the created order to avoid a 2nd order
-                self.order = self.buy(exectype=bt.Order.Close)
+                self.order = self.buy()
         else:
             if not(math.isnan(self.sell_signal[0])):
                 # SELL, SELL, SELL!!! (with all possible default parameters)
                 self.log('SELL CREATE, %.2f' % self.dataclose[0])
 
                 # Keep track of the created order to avoid a 2nd order
-                self.order = self.sell(exectype=bt.Order.Close)
+                self.order = self.sell()
 
 
 class TradeStat(bt.analyzers.TradeAnalyzer):
