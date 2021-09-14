@@ -21,8 +21,8 @@ def createSentimentScore(news):
     Pass each news into vader model,calculate their compound score
     :return: data frame for each news for its compound score
     """
-    import nltk
-    nltk.download("vader_lexicon")
+    #import nltk
+    #nltk.download("vader_lexicon")
     from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
     sid = SentimentIntensityAnalyzer()
