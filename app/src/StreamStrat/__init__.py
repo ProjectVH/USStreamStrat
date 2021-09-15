@@ -36,7 +36,7 @@ def get_input(stock_market_option, symbol):
         strategy_choices = ('DEMA', 'OBV', 'Fibonacci')
 
     selected_strategy = st.sidebar.selectbox('Chosen strategy', strategy_choices)
-    stake = st.sidebar.number_input('Stake', min_value=default_stake, max_value=None, value= default_stake)
+    stake = st.sidebar.number_input('Stake', min_value=1, max_value=None, value= default_stake)
     cash = st.sidebar.number_input('Cash',  min_value=1, max_value=None, value= 100000 )
 
     return start_date, end_date, selected_strategy, stake, cash
