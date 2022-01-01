@@ -22,7 +22,7 @@ class MongoDB:
         """
         dbName = self.dbName
         colName = self.colName
-        dbConn = pymongo.MongoClient(self.MONGO_URL)
+        dbConn = pymongo.MongoClient(self.MONGO_URL, tlsAllowInvalidCertificates = True)
         db = dbConn[dbName]
         collection = db[colName]
         return collection

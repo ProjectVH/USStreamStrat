@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from numpy import mean
 import os
 import json
 import logging
@@ -9,7 +10,8 @@ from src.database.mongoDB import StockFundaDB
 
 # helper function
 def format_number(num):
-    return f"{num:,}"
+    if num is not None:
+        return f"{num:,}"
 
 # Create a function to get the company name
 def get_company_name(symbol):
@@ -143,10 +145,40 @@ elif screen == 'News':
 
 
 elif screen == 'Fundamentals':
+    competitorPeRatio = []
+    competitorPriceToSales = []
+    competitorPriceToBook = []
+
+    if symbol == "AAPL":
+        competitor_symbols = ["DELL","MSFT"]
+    else:
+        competitor_symbols = []
 
     fundaDB = StockFundaDB('projectValHubDB','stockFundaData',os.environ["MONGO_URL"])
     collection = fundaDB.connectDB()
     fundaDB.create_index(collection)
+
+    # get competitor pe,ps,pb value
+    for competitor_symbol in competitor_symbols:
+        competitor_stock = IEXstock(os.environ["IEX_TOKEN"], competitor_symbol)
+        competitor_stats_cache_key = f"{competitor_symbol}_stats"
+        competitor_stats_cache = fundaDB.find_cache(collection, competitor_stats_cache_key)
+
+        if competitor_stats_cache is None:
+            competitor_stats = competitor_stock.get_stats()
+            fundaDB.save_cache(collection, competitor_stats, competitor_stats_cache_key)
+        else:
+            logging.info(f"found {competitor_symbol}_stats in cache")
+            competitor_stats = competitor_stats_cache["data"]
+
+        competitorPeRatio.append(competitor_stats['peRatio'])
+        competitorPriceToSales.append(competitor_stats['priceToSales'])
+        competitorPriceToBook.append(competitor_stats['priceToBook'])
+
+    if competitor_symbols:
+        peRatioMu = mean(competitorPeRatio)
+        priceToSalesMu = mean(competitorPriceToSales)
+        priceToBookMu = mean(competitorPriceToBook)
 
     stats_cache_key = f"{symbol}_stats"
     stats_cache = fundaDB.find_cache(collection, stats_cache_key)
@@ -155,7 +187,7 @@ elif screen == 'Fundamentals':
         stats = stock.get_stats()
         fundaDB.save_cache(collection, stats, stats_cache_key)
     else:
-        logging.info("found stats in cache")
+        logging.info(f"found {symbol}_stats in cache")
         stats = stats_cache["data"]
 
     st.header('Ratios')
@@ -165,14 +197,33 @@ elif screen == 'Fundamentals':
     with col1:
         st.subheader('P/E')
         st.write(stats['peRatio'])
+        if competitor_symbols:
+            if stats['peRatio']>peRatioMu:
+                st.markdown("<p style='color:blue'>Above Mean</p>", unsafe_allow_html=True)
+            else:
+                st.markdown("<p style='color:red'>Below Mean</p>", unsafe_allow_html=True)
+
         st.subheader('Forward P/E')
         st.write(stats['forwardPERatio'])
         st.subheader('PEG Ratio')
         st.write(stats['pegRatio'])
+
         st.subheader('Price to Sales')
         st.write(stats['priceToSales'])
+        if competitor_symbols:
+            if stats['priceToSales']>priceToSalesMu:
+                st.markdown("<p style='color:blue'>Above Mean</p>", unsafe_allow_html=True)
+            else:
+                st.markdown("<p style='color:red'>Below Mean</p>", unsafe_allow_html=True)
+
         st.subheader('Price to Book')
         st.write(stats['priceToBook'])
+        if competitor_symbols:
+            if stats['priceToBook']>priceToBookMu:
+                st.markdown("<p style='color:blue'>Above Mean</p>", unsafe_allow_html=True)
+            else:
+                st.markdown("<p style='color:red'>Below Mean</p>", unsafe_allow_html=True)
+
     with col2:
         st.subheader('Revenue')
         st.write(format_number(stats['revenue']))
